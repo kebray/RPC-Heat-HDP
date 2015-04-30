@@ -4,13 +4,12 @@ description: |
   Deploys a salt-master, and a number of salt-minions.
   One minion will be a hadoop master node.
   Rest of the minions will be hadoop data nodes.
-  Floating ip will be assigned to the salt-master.
+  
 
 parameter_groups:
 - parameters:
   - keyname
   - image
-  - floating-network-id
   - datanodes-count
   - flavor
 
@@ -23,12 +22,9 @@ parameters:
   image:
     type: string
     label: Image Name
+    default: Ubuntu 13.10 (Saucy Salamander)
     description: Name of the existing image to use for every virtual machine created by this stack. The image should have the heat-config and heat-config-script files included.
 
-  floating-network-id:
-    type: string
-    label: External Network UUID
-    description: UUID of the external network. The private network created by this stack will route to this network. Any floating IP addresses needed by this stack will also route to this network.
 
   datanodes-count:
     type: number
@@ -40,7 +36,7 @@ parameters:
     type: string
     label: Flavor
     description: Flavor (size) of all virtual machines in this stack.
-    default: m1.medium
+    default: 4 GB Performance
 
 resources:
 
@@ -220,6 +216,10 @@ resources:
               get_attr:
                 - stack-string
                 - value
+      networks:
+      - uuid: "00000000-0000-0000-0000-000000000000"
+      - uuid: "11111111-1111-1111-1111-111111111111"
+      - uuid: { get_resource: net }
       personality:
 
         # Private key for ssh'ing into minions
