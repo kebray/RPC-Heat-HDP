@@ -89,80 +89,7 @@ resources:
         - 8.8.8.8
         - 4.2.2.2
 
-  # Routes the private network to the external network.
-  router:
-    type: OS::Neutron::Router
-    properties:
-      external_gateway_info:
-        network: 
-          get_param: floating-network-id
-
-  # Router interface
-  interface:
-    type: OS::Neutron::RouterInterface
-    properties:
-      router_id:
-        get_resource: router
-      subnet_id: 
-        get_resource: subnet
-
-  secgroup:
-    type: OS::Neutron::SecurityGroup
-    properties:
-      name:
-        str_replace:
-          template: hdp-$stackstr-secgroup
-          params:
-            $stackstr:
-              get_attr:
-                - stack-string
-                - value
-      rules:
-        - protocol: icmp
-        - protocol: tcp
-          port_range_min: 22
-          port_range_max: 22
-        - protocol: tcp
-          port_range_min: 4505
-          port_range_max: 4506
-        - protocol: tcp
-          port_range_min: 50010
-          port_range_max: 50010
-        - protocol: tcp
-          port_range_min: 50020
-          port_range_max: 50020
-        - protocol: tcp
-          port_range_min: 50030
-          port_range_max: 50030
-        - protocol: tcp
-          port_range_min: 50060
-          port_range_max: 50060
-        - protocol: tcp
-          port_range_min: 50070
-          port_range_max: 50070
-        - protocol: tcp
-          port_range_min: 50075
-          port_range_max: 50075
-        - protocol: tcp
-          port_range_min: 50090
-          port_range_max: 50090
-        - protocol: tcp
-          port_range_min: 50105
-          port_range_max: 50105
-        - protocol: tcp
-          port_range_min: 8020
-          port_range_max: 8020
-        - protocol: tcp
-          port_range_min: 9001
-          port_range_max: 9001
-
-  # One floating ip for the salt-master node
-  master-ip:
-    type: OS::Neutron::FloatingIP
-    properties:
-      floating_network_id:
-        get_param: floating-network-id
-
+  
   # One port for the salt-master node
   master-port:
     type: OS::Neutron::Port
@@ -416,14 +343,6 @@ resources:
       # Using SoftwareConfigs - This needs to be set to SOFTWARE_CONFIG
       user_data_format: SOFTWARE_CONFIG
 
-  # Associate the master floating ip to the master port
-  master-floating-ip-ass: 
-    type: OS::Neutron::FloatingIPAssociation
-    properties: 
-      floatingip_id:
-        get_resource: master-ip
-      port_id:
-        get_resource: master-port
 
   # Each instance in this group will be an instance with salt-minion
   # installed and will have the salt role of 'hadoop_master'
