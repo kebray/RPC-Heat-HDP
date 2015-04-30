@@ -92,8 +92,7 @@ resources:
     properties:
       network_id:
         get_resource: net
-      security_groups:
-        - get_resource: secgroup
+      
 
   # Software configuration script for the salt-master node
   # Installs salt-master, sets permission on some personality files
@@ -383,9 +382,7 @@ resources:
           minion-config:
             get_resource: config-salt-minion
           minion-roles: "hadoop_master"
-          security-group:
-            get_resource: secgroup
-
+  
   minion-group-hadoop-slave:
     type: OS::Heat::ResourceGroup
     depends_on: deploy-salt-master
@@ -424,8 +421,7 @@ resources:
           minion-config:
             get_resource: config-salt-minion
           minion-roles: "hadoop_slave"
-          security-group:
-            get_resource: secgroup
+
 
   # SoftwareConfig that is to run on master.
   # Executes a salt state.highstate on all attached minions.
